@@ -1,7 +1,6 @@
 const PROXY_BASE = '/api/jupiter';
 const PROXY_HEADERS = {
   'Content-Type': 'application/json',
-};json',
 };
 
 export async function fetchUsdPrices(mints: string[]): Promise<Record<string, number>> {
