@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 136 88% 54%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 62%;
+    --accent: 270 100% 67%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 12%;
+    --ring: 136 88% 54%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    background: #000;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .text-gradient-brand {
+    background: linear-gradient(90deg, #9945ff 0%, #14f195 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes coin-pop {
+  0% {
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--coin-x), var(--coin-y)) scale(1) rotate(200deg);
+    opacity: 0;
+  }
+}
+
+@keyframes box-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(8deg) rotateY(-12deg);
+  }
+  50% {
+    transform: translateY(-4px) rotateX(8deg) rotateY(12deg);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-coin-pop {
+  animation: coin-pop 2.4s ease-out infinite;
+}
+
+.animate-box-float {
+  animation: box-float 4s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s ease-out both;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #111 25%, #1d1d1d 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.wallet-adapter-button {
+  font-family: inherit !important;
+}
