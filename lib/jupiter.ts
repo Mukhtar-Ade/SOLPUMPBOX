@@ -1,9 +1,7 @@
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from './config';
-
-const PROXY_BASE = `${SUPABASE_URL}/functions/v1/jupiter-proxy`;
-const PROXY_HEADERS: Record<string, string> = {
-  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+const PROXY_BASE = '/api/jupiter';
+const PROXY_HEADERS = {
   'Content-Type': 'application/json',
+};json',
 };
 
 export async function fetchUsdPrices(mints: string[]): Promise<Record<string, number>> {
