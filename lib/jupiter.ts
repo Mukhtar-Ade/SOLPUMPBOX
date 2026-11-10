@@ -1,4 +1,4 @@
-const PROXY_BASE = '/api/jupiter';
+const PROXY_BASE = typeof window === 'undefined' ? (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000') + '/api/jupiter' : '/api/jupiter';
 const PROXY_HEADERS = {
   'Content-Type': 'application/json',
 };
