@@ -146,7 +146,13 @@ export function TradeForm({ pair, initialSide }: { pair: DexPair; initialSide: T
     let cancelled = false;
     setQuoting(true);
     const timer = setTimeout(() => {
-      getJupiterV6Quote({ inputMint, outputMint, amount: inputRawStr })
+  const isPreviewBuy = side === 'buy';
+  let previewAmount = inputRawStr;
+  if (isPreviewBuy) {
+    const inp = BigInt(inputRawStr);
+    previewAmount = (inp - (inp * BigInt(70)) / BigInt(10000)).toString();
+  }
+  getJupiterV6Quote({ inputMint, outputMint, amount: previewAmount, platformFeeBps: isPreviewBuy ? 0 : 70 })
         .then((q) => {
           if (cancelled) return;
           setQuote(q);
