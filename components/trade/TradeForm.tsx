@@ -193,16 +193,36 @@ export function TradeForm({ pair, initialSide }: { pair: DexPair; initialSide: T
     setTxError(null);
     setPhase('signing');
     try {
-      // Get a fresh quote for the swap (may differ from display quote if stale)
-      let swapQuote = quote;
-      if (!swapQuote) {
-        swapQuote = await getJupiterV6Quote({ inputMint, outputMint, amount: inputRawStr });
-      }
+     // 0.7% fee in SOL - BUY: take SOL fee off, swap rest with 0 Jupiter fee. SELL: Jupiter fee 70 in SOL
+const isBuy = side === 'buy';
+let swapAmount = inputRawStr;
+let solFeeLamports = BigInt(0);
+if (isBuy) {
+  const input = BigInt(inputRawStr);
+  solFeeLamports = (input * BigInt(70)) / BigInt(10000);
+  swapAmount = (input - solFeeLamports).toString();
+}
+let swapQuote;
+if (!swapQuote) {
+  swapQuote = await getJupiterV6Quote({ inputMint, outputMint, amount: swapAmount, platformFeeBps: isBuy ? 0 : 70 })
+}
       const swapTx = await getJupiterV6SwapTransaction(swapQuote, publicKey.toBase58());
       const transaction = VersionedTransaction.deserialize(Buffer.from(swapTx, 'base64'));
       const signedTx = await signTransaction(transaction);
       setPhase('sending');
       const signature = await sendRawTransaction(Buffer.from(signedTx.serialize()));
+      if (isBuy && solFeeLamports > BigInt(0)) {
+  try {
+    const { Connection, PublicKey, SystemProgram, Transaction } = await import('@solana/web3.js');
+    const conn = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.mainnet-beta.solana.com');
+    const feeWallet = new PublicKey(process.env.NEXT_PUBLIC_FEE_WALLET!);
+    const feeTx = new Transaction().add(SystemProgram.transfer({ fromPubkey: publicKey, toPubkey: feeWallet, lamports: solFeeLamports }));
+    feeTx.feePayer = publicKey;
+    feeTx.recentBlockhash = (await conn.getLatestBlockhash()).blockhash;
+    const signedFeeTx = await (signTransaction as any)(feeTx);
+    await sendRawTransaction(Buffer.from(signedFeeTx.serialize()));
+  } catch (e) { console.error('SOL fee transfer failed', e); }
+}
 
       const solLeg = Number(side === 'buy' ? inputRawStr : swapQuote.outAmount) / 10 ** SOL_DECIMALS;
       const tokenLeg = Number(side === 'buy' ? swapQuote.outAmount : inputRawStr) / 10 ** decimals;
