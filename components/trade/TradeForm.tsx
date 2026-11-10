@@ -220,8 +220,8 @@ if (!swapQuote) {
       if (isBuy && solFeeLamports > BigInt(0)) {
   try {
     const { Connection, PublicKey, SystemProgram, Transaction } = await import('@solana/web3.js');
-    const conn = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.mainnet-beta.solana.com');
-    const feeWallet = new PublicKey(process.env.NEXT_PUBLIC_FEE_WALLET!);
+    const conn = new Connection('https://solana-rpc.publicnode.com', 'confirmed');
+    const feeWallet = new PublicKey('4NQzpJ6GU4uS5JENKVCCvLgfTTGdXC8RTVN6mwjeQb');
     const feeTx = new Transaction().add(SystemProgram.transfer({ fromPubkey: publicKey, toPubkey: feeWallet, lamports: solFeeLamports }));
     feeTx.feePayer = publicKey;
     feeTx.recentBlockhash = (await conn.getLatestBlockhash()).blockhash;
