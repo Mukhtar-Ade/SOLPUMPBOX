@@ -34,12 +34,29 @@ export async function getJupiterV6Quote(params: {
   slippageBps?: number;
 }): Promise<JupiterQuote> {
   const feeWallet = process.env.NEXT_PUBLIC_FEE_WALLET;
+let feeAccount: string | undefined = undefined;
+if (feeWallet) {
+  try {
+    const { PublicKey } = await import("@solana/web3.js");
+    const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+    const [ata] = await PublicKey.findProgramAddress(
+      [
+        new PublicKey(feeWallet).toBuffer(),
+        TOKEN_PROGRAM_ID.toBuffer(),
+        new PublicKey(params.outputMint).toBuffer(),
+      ],
+      ASSOCIATED_TOKEN_PROGRAM_ID
+    );
+    feeAccount = ata.toBase58();
+  } catch {}
+}
 const search = new URLSearchParams({
   inputMint: params.inputMint,
   outputMint: params.outputMint,
   amount: String(params.amount),
   slippageBps: String(params.slippageBps ?? 300),
-  ...(feeWallet ? { platformFeeBps: "50", feeAccount: feeWallet } : {}),
+  ...(feeAccount ? { platformFeeBps: "50", feeAccount } : {}),
 });
   const res = await fetch(`${PROXY_BASE}/quote?${search.toString()}`, {
     headers: PROXY_HEADERS,
