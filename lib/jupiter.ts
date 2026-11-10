@@ -37,8 +37,8 @@ export async function getJupiterV6Quote(params: {
 const search = new URLSearchParams({
   inputMint: params.inputMint,
   outputMint: params.outputMint,
-  amount: params.amount,
-  slippageBps: params.slippageBps ?? 300,
+  amount: String(params.amount),
+  slippageBps: String(params.slippageBps ?? 300),
   ...(feeWallet ? { platformFeeBps: "50", feeAccount: feeWallet } : {}),
 });
   const res = await fetch(`${PROXY_BASE}/quote?${search.toString()}`, {
