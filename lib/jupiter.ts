@@ -32,6 +32,7 @@ export async function getJupiterV6Quote(params: {
   outputMint: string;
   amount: string;
   slippageBps?: number;
+  platformFeeBps?: number;
 }): Promise<JupiterQuote> {
   const feeWallet = process.env.NEXT_PUBLIC_FEE_WALLET;
 let feeAccount: string | undefined = undefined;
@@ -56,7 +57,7 @@ const search = new URLSearchParams({
   outputMint: params.outputMint,
   amount: String(params.amount),
   slippageBps: String(params.slippageBps ?? 300),
-  ...(feeAccount ? { platformFeeBps: "50", feeAccount } : {}),
+...(feeAccount && (params.platformFeeBps ?? 70) > 0 ? { platformFeeBps: String(params.platformFeeBps ?? 70), feeAccount } : {}),
 });
   const res = await fetch(`${PROXY_BASE}/quote?${search.toString()}`, {
     headers: PROXY_HEADERS,
