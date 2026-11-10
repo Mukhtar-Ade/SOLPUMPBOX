@@ -1,6 +1,6 @@
 export const RPC_URLS = [
   'https://solana-rpc.publicnode.com',
-  'https://api.mainnet-beta.solana.com',
+ 
   'https://rpc.ankr.com/solana',
 ];
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
