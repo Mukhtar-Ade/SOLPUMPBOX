@@ -33,12 +33,14 @@ export async function getJupiterV6Quote(params: {
   amount: string;
   slippageBps?: number;
 }): Promise<JupiterQuote> {
-  const search = new URLSearchParams({
-    inputMint: params.inputMint,
-    outputMint: params.outputMint,
-    amount: params.amount,
-    slippageBps: String(params.slippageBps ?? 300),
-  });
+  const feeWallet = process.env.NEXT_PUBLIC_FEE_WALLET;
+const search = new URLSearchParams({
+  inputMint: params.inputMint,
+  outputMint: params.outputMint,
+  amount: params.amount,
+  slippageBps: params.slippageBps ?? 300,
+  ...(feeWallet ? { platformFeeBps: "50", feeAccount: feeWallet } : {}),
+});
   const res = await fetch(`${PROXY_BASE}/quote?${search.toString()}`, {
     headers: PROXY_HEADERS,
     signal: AbortSignal.timeout(15000),
